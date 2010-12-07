@@ -55,10 +55,20 @@ var Eyeball = (function () {
         
         // Listen for mouse movement
         document.addEventListener('mousemove', function (e) {
-            for (var i = 0; i < Eyeball.balls.length; i++) {
-                Eyeball.balls[i].drawPupilsFromMousePosition(e.clientX, e.clientY);
-            }
+            Eyeball.lastMouseCoords = {
+                x: e.clientX,
+                y: e.clientY
+            };
+            Eyeball.updatePupils();
         }, false);
+    };
+    Eyeball.lastMouseCoords = null;
+    Eyeball.updatePupils = function () {
+        if (Eyeball.lastMouseCoords) {
+            for (var i = 0; i < Eyeball.balls.length; i++) {
+                Eyeball.balls[i].drawPupilsFromMousePosition(Eyeball.lastMouseCoords);
+            }
+        }
     };
     Eyeball.prototype = {
         setupCanvas: function (canvas) {
@@ -72,6 +82,11 @@ var Eyeball = (function () {
             this.context.clearRect.apply(this.context, arguments);
         },
         fill: function () {
+            this.context.fillStyle = "rgb(0,0,0)";
+            this.context.fillRect.apply(this.context, arguments);
+        },
+        fillWhite: function () {
+            this.context.fillStyle = "rgb(255,255,255)";
             this.context.fillRect.apply(this.context, arguments);
         },
         clearCanvas: function () {
@@ -79,15 +94,15 @@ var Eyeball = (function () {
         },
         drawEyeball: function (x, y) {
             this.fill(x - 2, y - 8, 5, 1);
-            this.fill(x - 4, y - 7, 2, 1); this.fill(x + 3, y - 7, 2, 1);
-            this.fill(x - 5, y - 6, 1, 1); this.fill(x + 5, y - 6, 1, 1);
-            this.fill(x - 6, y - 5, 1, 1); this.fill(x + 6, y - 5, 1, 1);
-            this.fill(x - 7, y - 4, 1, 2); this.fill(x + 7, y - 4, 1, 2);
-            this.fill(x - 8, y - 2, 1, 5); this.fill(x + 8, y - 2, 1, 5);
-            this.fill(x - 7, y + 3, 1, 2); this.fill(x + 7, y + 3, 1, 2);
-            this.fill(x - 6, y + 5, 1, 1); this.fill(x + 6, y + 5, 1, 1);
-            this.fill(x - 5, y + 6, 1, 1); this.fill(x + 5, y + 6, 1, 1);
-            this.fill(x - 4, y + 7, 2, 1); this.fill(x + 3, y + 7, 2, 1);
+            this.fill(x - 4, y - 7, 2, 1); this.fillWhite(x - 2, y - 7, 5,  1); this.fill(x + 3, y - 7, 2, 1);
+            this.fill(x - 5, y - 6, 1, 1); this.fillWhite(x - 4, y - 6, 9,  1); this.fill(x + 5, y - 6, 1, 1);
+            this.fill(x - 6, y - 5, 1, 1); this.fillWhite(x - 5, y - 5, 11, 1); this.fill(x + 6, y - 5, 1, 1);
+            this.fill(x - 7, y - 4, 1, 2); this.fillWhite(x - 6, y - 4, 13, 2); this.fill(x + 7, y - 4, 1, 2);
+            this.fill(x - 8, y - 2, 1, 5); this.fillWhite(x - 7, y - 2, 15, 5); this.fill(x + 8, y - 2, 1, 5);
+            this.fill(x - 7, y + 3, 1, 2); this.fillWhite(x - 6, y + 3, 13, 2); this.fill(x + 7, y + 3, 1, 2);
+            this.fill(x - 6, y + 5, 1, 1); this.fillWhite(x - 5, y + 5, 11, 1); this.fill(x + 6, y + 5, 1, 1);
+            this.fill(x - 5, y + 6, 1, 1); this.fillWhite(x - 4, y + 6, 9,  1); this.fill(x + 5, y + 6, 1, 1);
+            this.fill(x - 4, y + 7, 2, 1); this.fillWhite(x - 2, y + 7, 5,  1); this.fill(x + 3, y + 7, 2, 1);
             this.fill(x - 2, y + 8, 5, 1);
         },
         drawPupil: function (x, y) {
@@ -101,31 +116,31 @@ var Eyeball = (function () {
             this.fill(x - 1, y + 2, 3, 1);
         },
         drawBlinkStart: function (x, y) {
-            this.clear(x - 2, y - 7, 5, 1);
-            this.clear(x - 4, y - 6, 9, 1);
-            this.clear(x - 5, y - 5, 2, 1); this.fill(x - 3, y - 5, 7, 1); this.clear(x + 4, y - 5, 2, 1);
-            this.clear(x - 6, y - 4, 1, 1); this.fill(x - 5, y - 4, 2, 1); this.fill( x + 4, y - 4, 2, 1); this.clear(x + 6, y - 4, 1, 1);
-            this.fill( x - 6, y - 3, 1, 1); this.fill(x + 6, y - 3, 1, 1);
+            this.fillWhite(x - 2, y - 7, 5, 1);
+            this.fillWhite(x - 4, y - 6, 9, 1);
+            this.fillWhite(x - 5, y - 5, 2, 1); this.fill(x - 3, y - 5, 7, 1); this.fillWhite(x + 4, y - 5, 2, 1);
+            this.fillWhite(x - 6, y - 4, 1, 1); this.fill(x - 5, y - 4, 2, 1); this.fill     (x + 4, y - 4, 2, 1); this.fillWhite(x + 6, y - 4, 1, 1);
+            this.fill     (x - 6, y - 3, 1, 1); this.fill(x + 6, y - 3, 1, 1);
         },
         drawBlinkMiddle: function (x, y) {
-            this.clear(x - 2, y - 7, 5,  1);
-            this.clear(x - 4, y - 6, 9,  1);
-            this.clear(x - 5, y - 5, 11, 1);
-            this.clear(x - 6, y - 4, 13, 2);
-            this.clear(x - 7, y - 2, 4,  1); this.fill(x - 3, y - 2, 7, 1); this.clear(x + 4, y - 2, 4, 1);
-            this.fill( x - 7, y - 1, 4,  1); this.fill(x + 4, y - 1, 4, 1);
+            this.fillWhite(x - 2, y - 7, 5,  1);
+            this.fillWhite(x - 4, y - 6, 9,  1);
+            this.fillWhite(x - 5, y - 5, 11, 1);
+            this.fillWhite(x - 6, y - 4, 13, 2);
+            this.fillWhite(x - 7, y - 2, 4,  1); this.fill(x - 3, y - 2, 7, 1); this.fillWhite(x + 4, y - 2, 4, 1);
+            this.fill     (x - 7, y - 1, 4,  1); this.fill(x + 4, y - 1, 4, 1);
         },
         drawBlinkEnd: function (x, y) {
-            this.clear(x - 2, y - 7, 5,  1);
-            this.clear(x - 4, y - 6, 9,  1);
-            this.clear(x - 5, y - 5, 11, 1);
-            this.clear(x - 6, y - 4, 13, 2);
-            this.clear(x - 7, y - 2, 15, 5);
-            this.clear(x - 6, y + 3, 13, 1);
-            this.fill( x - 6, y + 4, 1,  1); this.clear(x - 5, y + 4, 11, 1); this.fill(x + 6, y + 4, 1, 1);
-            this.fill( x - 5, y + 5, 1,  1); this.clear(x - 4, y + 5, 9,  1); this.fill(x + 5, y + 5, 1, 1);
-            this.fill( x - 4, y + 6, 2,  1); this.clear(x - 2, y + 6, 6,  1); this.fill(x + 3, y + 6, 2, 1);
-            this.fill( x - 2, y + 7, 5,  1);
+            this.fillWhite(x - 2, y - 7, 5,  1);
+            this.fillWhite(x - 4, y - 6, 9,  1);
+            this.fillWhite(x - 5, y - 5, 11, 1);
+            this.fillWhite(x - 6, y - 4, 13, 2);
+            this.fillWhite(x - 7, y - 2, 15, 5);
+            this.fillWhite(x - 6, y + 3, 13, 1);
+            this.fill     (x - 6, y + 4, 1,  1); this.fillWhite(x - 5, y + 4, 11, 1); this.fill(x + 6, y + 4, 1, 1);
+            this.fill     (x - 5, y + 5, 1,  1); this.fillWhite(x - 4, y + 5, 9,  1); this.fill(x + 5, y + 5, 1, 1);
+            this.fill     (x - 4, y + 6, 2,  1); this.fillWhite(x - 2, y + 6, 6,  1); this.fill(x + 3, y + 6, 2, 1);
+            this.fill     (x - 2, y + 7, 5,  1);
         },
         drawPupils: function (coords) {
             // Clear canvas and draw each eye
@@ -193,20 +208,20 @@ var Eyeball = (function () {
         drawOriginPupils: function () {
             this.drawPupils(this.origins);
         },
-        drawPupilsFromMousePosition: function (x, y) {
+        drawPupilsFromMousePosition: function (coords) {
             this.stopBlink = true;
-            var coords = this.getPupilPositionsFromMousePosition(x, y);
-            this.drawPupils(coords);
+            var pupilCoords = this.getPupilPositionsFromMousePosition(coords.x, coords.y);
+            this.drawPupils(pupilCoords);
             this.resetBlinkTimeout();
         },
         getOffset: function () {
             var left = 0;
             var top = 0;
             var parent = this.container;
-            while (parent && parent !== document) {
+            while (parent) {
                 left += parent.offsetLeft;
                 top += parent.offsetTop;
-                parent = parent.parentNode;
+                parent = parent.offsetParent;
             }
             return {
                 top: top,
