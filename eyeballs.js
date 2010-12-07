@@ -14,9 +14,6 @@
     var container = document.getElementById('eyeballs');
     container.style.width = containerWidth + 'px';
     container.style.height = containerHeight + 'px';
-    container.style.padding = '5px';
-    console.log(container.innerHeight);
-    console.log(container.innerWidth);
     
     // Append canvas and setup the 2d drawing context
     var eyeCanvas = document.createElement('canvas');
@@ -28,8 +25,11 @@
     // Listen for mouse movement
     document.addEventListener('mousemove', function (e) {
         // Normalise x and y to container page offset
-        drawPupils(getPupilPositionsFromMousePosition(e.x - container.offsetLeft, e.y - container.offsetTop));
+        drawPupils(getPupilPositionsFromMousePosition(e.x, e.y));
     }, false);
+    
+    // Draw initial state
+    drawPupils(origins);
     
     
     function drawEyeball (x, y) {
@@ -65,6 +65,8 @@
         drawPupil(coords.x2, coords.y2);
     }
     function getPupilPositionsFromMousePosition (x, y) {
+        x = x - container.offsetLeft;
+        y = y - container.offsetTop;
         // Get distances from eye origins to mouse position
         x1 = x - origins.x1;
         y1 = y - origins.y1;
