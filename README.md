@@ -1,4 +1,4 @@
-eyeballs.js — a JavaScript implementation of the Mac System 6 era Eyeballs™ menubar extension.
+eyeballs.js — a JavaScript implementation of the Mac System 6 era Eyeballs menubar extension.
 
 1. Copy eyeballs.js to your server.
 2. Shove a `<div class="eyeball></div>` in your HTML where you want your eyeballs — you can have more than one!
