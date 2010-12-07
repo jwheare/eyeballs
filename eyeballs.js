@@ -59,7 +59,7 @@
         bindMouseMoveListener: function () {
             var that = this;
             document.addEventListener('mousemove', function (e) {
-                that.drawPupils(that.getPupilPositionsFromMousePosition(e.x, e.y));
+                that.drawPupils(that.getPupilPositionsFromMousePosition(e.clientX, e.clientY));
             }, false);
         },
         drawPupil: function (x, y) {
