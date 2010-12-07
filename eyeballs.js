@@ -1,4 +1,4 @@
-(function () {
+var Eyeball = (function () {
     function Eyeball (container) {
         // Conf
         this.containerWidth = Eyeball.conf.containerWidth;
@@ -12,10 +12,14 @@
         this.container.style.height = this.containerHeight + 'px';
         
         // Canvas
-        this.context = this.setupCanvas();
+        this.canvas = document.createElement('canvas');
+        this.context = this.setupCanvas(this.canvas);
         
         // Draw initial state
         this.drawOriginPupils();
+        
+        // Start blink timeout
+        this.resetBlinkTimeout();
         
         Eyeball.balls.push(this);
     }
@@ -32,40 +36,96 @@
         },
         radius: 5
     };
+    Eyeball.init = function () {
+        // Find existing eyeballs
+        var i, containers = [];
+        if ('getElementsByClassName' in document) {
+            containers = document.getElementsByClassName('eyeball');
+        } else {
+            var elements = document.getElementsByTagName('*');
+            for (i = 0; i < elements.length; i++) {
+                if (elements[i].className.match(/\beyeball\b/, 'g')) {
+                    containers.push(elements[i]);
+                }
+            }
+        }
+        for (i = 0; i < containers.length; i++) {
+            new Eyeball(containers[i]);
+        }
+        
+        // Listen for mouse movement
+        document.addEventListener('mousemove', function (e) {
+            for (var i = 0; i < Eyeball.balls.length; i++) {
+                Eyeball.balls[i].drawPupilsFromMousePosition(e.clientX, e.clientY);
+            }
+        }, false);
+    };
     Eyeball.prototype = {
-        setupCanvas: function () {
+        setupCanvas: function (canvas) {
             // Append canvas and setup the 2d drawing context
-            var eyeCanvas = document.createElement('canvas');
-            eyeCanvas.width = this.containerWidth;
-            eyeCanvas.height = this.containerHeight;
-            this.container.appendChild(eyeCanvas);
-            return eyeCanvas.getContext('2d');
+            canvas.width = this.containerWidth;
+            canvas.height = this.containerHeight;
+            this.container.appendChild(canvas);
+            return canvas.getContext('2d');
+        },
+        clear: function () {
+            this.context.clearRect.apply(this.context, arguments);
+        },
+        fill: function () {
+            this.context.fillRect.apply(this.context, arguments);
+        },
+        clearCanvas: function () {
+            this.clear(0, 0, this.containerWidth, this.containerHeight);
         },
         drawEyeball: function (x, y) {
-            this.context.fillRect(x - 2, y - 8, 5, 1);
-            this.context.fillRect(x - 4, y - 7, 2, 1); this.context.fillRect(x + 3, y - 7, 2, 1);
-            this.context.fillRect(x - 5, y - 6, 1, 1); this.context.fillRect(x + 5, y - 6, 1, 1);
-            this.context.fillRect(x - 6, y - 5, 1, 1); this.context.fillRect(x + 6, y - 5, 1, 1);
-            this.context.fillRect(x - 7, y - 4, 1, 2); this.context.fillRect(x + 7, y - 4, 1, 2);
-            this.context.fillRect(x - 8, y - 2, 1, 5); this.context.fillRect(x + 8, y - 2, 1, 5);
-            this.context.fillRect(x - 7, y + 3, 1, 2); this.context.fillRect(x + 7, y + 3, 1, 2);
-            this.context.fillRect(x - 6, y + 5, 1, 1); this.context.fillRect(x + 6, y + 5, 1, 1);
-            this.context.fillRect(x - 5, y + 6, 1, 1); this.context.fillRect(x + 5, y + 6, 1, 1);
-            this.context.fillRect(x - 4, y + 7, 2, 1); this.context.fillRect(x + 3, y + 7, 2, 1);
-            this.context.fillRect(x - 2, y + 8, 5, 1);
+            this.fill(x - 2, y - 8, 5, 1);
+            this.fill(x - 4, y - 7, 2, 1); this.fill(x + 3, y - 7, 2, 1);
+            this.fill(x - 5, y - 6, 1, 1); this.fill(x + 5, y - 6, 1, 1);
+            this.fill(x - 6, y - 5, 1, 1); this.fill(x + 6, y - 5, 1, 1);
+            this.fill(x - 7, y - 4, 1, 2); this.fill(x + 7, y - 4, 1, 2);
+            this.fill(x - 8, y - 2, 1, 5); this.fill(x + 8, y - 2, 1, 5);
+            this.fill(x - 7, y + 3, 1, 2); this.fill(x + 7, y + 3, 1, 2);
+            this.fill(x - 6, y + 5, 1, 1); this.fill(x + 6, y + 5, 1, 1);
+            this.fill(x - 5, y + 6, 1, 1); this.fill(x + 5, y + 6, 1, 1);
+            this.fill(x - 4, y + 7, 2, 1); this.fill(x + 3, y + 7, 2, 1);
+            this.fill(x - 2, y + 8, 5, 1);
         },
         drawPupil: function (x, y) {
             // Pixel circle!
             x = Math.round(x);
             y = Math.round(y);
-            this.context.fillRect(x - 1, y - 2, 3, 1);
-            this.context.fillRect(x - 2, y - 1, 5, 1);
-            this.context.fillRect(x - 2, y    , 5, 1);
-            this.context.fillRect(x - 2, y + 1, 5, 1);
-            this.context.fillRect(x - 1, y + 2, 3, 1);
+            this.fill(x - 1, y - 2, 3, 1);
+            this.fill(x - 2, y - 1, 5, 1);
+            this.fill(x - 2, y    , 5, 1);
+            this.fill(x - 2, y + 1, 5, 1);
+            this.fill(x - 1, y + 2, 3, 1);
         },
-        clearCanvas: function () {
-            this.context.clearRect(0, 0, this.containerWidth, this.containerHeight);
+        drawBlinkStart: function (x, y) {
+            this.clear(x - 2, y - 7, 5, 1);
+            this.clear(x - 4, y - 6, 9, 1);
+            this.clear(x - 5, y - 5, 2, 1); this.fill(x - 3, y - 5, 7, 1); this.clear(x + 4, y - 5, 2, 1);
+            this.clear(x - 6, y - 4, 1, 1); this.fill(x - 5, y - 4, 2, 1); this.fill( x + 4, y - 4, 2, 1); this.clear(x + 6, y - 4, 1, 1);
+            this.fill( x - 6, y - 3, 1, 1); this.fill(x + 6, y - 3, 1, 1);
+        },
+        drawBlinkMiddle: function (x, y) {
+            this.clear(x - 2, y - 7, 5,  1);
+            this.clear(x - 4, y - 6, 9,  1);
+            this.clear(x - 5, y - 5, 11, 1);
+            this.clear(x - 6, y - 4, 13, 2);
+            this.clear(x - 7, y - 2, 4,  1); this.fill(x - 3, y - 2, 7, 1); this.clear(x + 4, y - 2, 4, 1);
+            this.fill( x - 7, y - 1, 4,  1); this.fill(x + 4, y - 1, 4, 1);
+        },
+        drawBlinkEnd: function (x, y) {
+            this.clear(x - 2, y - 7, 5,  1);
+            this.clear(x - 4, y - 6, 9,  1);
+            this.clear(x - 5, y - 5, 11, 1);
+            this.clear(x - 6, y - 4, 13, 2);
+            this.clear(x - 7, y - 2, 15, 5);
+            this.clear(x - 6, y + 3, 13, 1);
+            this.fill( x - 6, y + 4, 1,  1); this.clear(x - 5, y + 4, 11, 1); this.fill(x + 6, y + 4, 1, 1);
+            this.fill( x - 5, y + 5, 1,  1); this.clear(x - 4, y + 5, 9,  1); this.fill(x + 5, y + 5, 1, 1);
+            this.fill( x - 4, y + 6, 2,  1); this.clear(x - 2, y + 6, 6,  1); this.fill(x + 3, y + 6, 2, 1);
+            this.fill( x - 2, y + 7, 5,  1);
         },
         drawPupils: function (coords) {
             // Clear canvas and draw each eye
@@ -75,17 +135,89 @@
             this.drawPupil(coords.x1, coords.y1);
             this.drawPupil(coords.x2, coords.y2);
         },
+        animate: function (args) {
+            // Abort if a stop has been signalled
+            if (args.stopCondition && args.stopCondition()) {
+                return;
+            }
+            if (args.steps.length) {
+                var step = args.steps.shift();
+                step();
+                var self = arguments.callee;
+                setTimeout(function() {
+                    self(args);
+                }, args.timeout);
+            }
+        },
+        stopBlink: false,
+        blink: function () {
+            this.stopBlink = false;
+            var that = this;
+            this.animate({
+                timeout: 80,
+                stopCondition: function () {
+                    return that.stopBlink;
+                },
+                steps: [function s1 () {
+                    that.drawBlinkStart(that.origins.x1, that.origins.y1);
+                    that.drawBlinkStart(that.origins.x2, that.origins.y2);
+                }, function s2 () {
+                    that.drawBlinkMiddle(that.origins.x1, that.origins.y1);
+                    that.drawBlinkMiddle(that.origins.x2, that.origins.y2);
+                }, function s3 () {
+                    that.drawBlinkEnd(that.origins.x1, that.origins.y1);
+                    that.drawBlinkEnd(that.origins.x2, that.origins.y2);
+                }, function s4 () {
+                    that.drawOriginPupils();
+                    that.drawBlinkMiddle(that.origins.x1, that.origins.y1);
+                    that.drawBlinkMiddle(that.origins.x2, that.origins.y2);
+                }, function s5 () {
+                    that.drawOriginPupils();
+                    that.drawBlinkStart(that.origins.x1, that.origins.y1);
+                    that.drawBlinkStart(that.origins.x2, that.origins.y2);
+                }]
+            });
+            
+            this.resetBlinkTimeout();
+        },
+        blinkTimeout: null,
+        resetBlinkTimeout: function () {
+            if (this.blinkTimeout) {
+                clearTimeout(this.blinkTimeout);
+            }
+            var that = this;
+            this.blinkTimeout = setTimeout(function () {
+                that.blink();
+            }, 5000);
+        },
         drawOriginPupils: function () {
             this.drawPupils(this.origins);
         },
         drawPupilsFromMousePosition: function (x, y) {
+            this.stopBlink = true;
             var coords = this.getPupilPositionsFromMousePosition(x, y);
             this.drawPupils(coords);
+            this.resetBlinkTimeout();
+        },
+        getOffset: function () {
+            var left = 0;
+            var top = 0;
+            var parent = this.container;
+            while (parent && parent !== document) {
+                left += parent.offsetLeft;
+                top += parent.offsetTop;
+                parent = parent.parentNode;
+            }
+            return {
+                top: top,
+                left: left
+            };
         },
         getPupilPositionsFromMousePosition: function (x, y) {
             // Normalise x and y to container page offset
-            x = x - this.container.offsetLeft;
-            y = y - this.container.offsetTop;
+            var offset = this.getOffset();
+            x = x - offset.left;
+            y = y - offset.top;
             
             // Get distances from eye origins to mouse position
             x1 = x - this.origins.x1;
@@ -111,27 +243,8 @@
         }
     };
     
+    // Engage eyeballs
+    Eyeball.init();
     
-    // Listen for mouse movement
-    document.addEventListener('mousemove', function (e) {
-        for (var i = 0; i < Eyeball.balls.length; i++) {
-            Eyeball.balls[i].drawPupilsFromMousePosition(e.clientX, e.clientY);
-        }
-    }, false);
-    
-    // Setup eyeballs
-    var i, containers = [];
-    if ('getElementsByClassName' in document) {
-        containers = document.getElementsByClassName('eyeball');
-    } else {
-        var elements = document.getElementsByTagName('*');
-        for (i = 0; i < elements.length; i++) {
-            if (elements[i].className.match(/\beyeball\b/, 'g')) {
-                containers.push(elements[i]);
-            }
-        }
-    }
-    for (i = 0; i < containers.length; i++) {
-        var eyeball = new Eyeball(containers[i]);
-    }
+    return Eyeball;
 })();

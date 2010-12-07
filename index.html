@@ -6,66 +6,51 @@
         <title>Eyeballs™</title>
     </head>
     <style>
-    body {
+    body, html {
         margin: 0;
         padding: 0;
+        height: 100%;
+        width: 100%;
     }
     .eyeball {
+        display: inline-block;
+        margin-right: 5px;
+    }
+    #eyeballs {
         position: absolute;
-    }
-    #e1 {
-        top: 50%;
         left: 50%;
-        margin: -8px 0 0 -4px;
-    }
-    #e2 {
-        top: 20px;
-        left: 20px;
-    }
-    #e3 {
-        top: 20px;
-        right: 20px;
-    }
-    #e4 {
-        bottom: 20px;
-        left: 20px;
-    }
-    #e5 {
-        bottom: 20px;
-        right: 20px;
-    }
-    #e11 {
-        top: 20px;
-        left: 65px;
-    }
-    #e12 {
-        top: 20px;
-        left: 110px;
-    }
-    #e13 {
-        top: 20px;
-        left: 155px;
-    }
-    #e14 {
-        top: 20px;
-        left: 200px;
-    }
-    #e15 {
-        top: 20px;
-        left: 245px;
+        top: 50%;
+        width: 330px;
+        height: 220px;
+        margin-left: -158px;
+        margin-top: -107px;
     }
     </style>
     <body>
-        <div class="eyeball" id="e1"></div>
-        <div class="eyeball" id="e2"></div>
-        <div class="eyeball" id="e3"></div>
-        <div class="eyeball" id="e4"></div>
-        <div class="eyeball" id="e5"></div>
-        <div class="eyeball" id="e11"></div>
-        <div class="eyeball" id="e12"></div>
-        <div class="eyeball" id="e13"></div>
-        <div class="eyeball" id="e14"></div>
-        <div class="eyeball" id="e15"></div>
+        <div class="eyeball" style="position: absolute; right: 20px; top: 20px;"></div>
+        <div id="eyeballs"></div>
         <script src="eyeballs.js"></script>
+        <script>
+        (function () {
+            // EYEBALLS!!!™
+            var colspace = 5;
+            var rowspace = 5;
+            var cols = 8;
+            var rows = 10;
+            var eyeballContainer = document.getElementById('eyeballs');
+            
+            var c, r, top, left, ball;
+            for (c = 0; c < cols; c++) {
+                left = c * (Eyeball.conf.containerWidth + colspace) + colspace;
+                for (r = 0; r < rows; r++) {
+                    top = r * (Eyeball.conf.containerHeight + rowspace) + rowspace;
+                    ball = document.createElement('div');
+                    ball.className = 'eyeball';
+                    new Eyeball(ball);
+                    eyeballContainer.appendChild(ball);
+                }
+            }
+        })();
+        </script>
     </body>
 </html>
