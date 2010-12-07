@@ -1,15 +1,10 @@
 (function () {
     function Eyeball (container) {
         // Conf
-        this.containerWidth = 35;
-        this.containerHeight = 17;
-        this.origins = {
-            x1: 8,
-            y1: 8,
-            x2: 26,
-            y2: 8
-        };
-        this.radius = 5;
+        this.containerWidth = Eyeball.conf.containerWidth;
+        this.containerHeight = Eyeball.conf.containerHeight;
+        this.origins = Eyeball.conf.origins;
+        this.radius = Eyeball.conf.radius;
         
         // Container dimensions
         this.container = container;
@@ -25,6 +20,17 @@
         // Draw initial state
         this.drawOriginPupils();
     }
+    Eyeball.conf = {
+        containerWidth: 35,
+        containerHeight: 17,
+        origins: {
+            x1: 8,
+            y1: 8,
+            x2: 26,
+            y2: 8
+        },
+        radius: 5
+    };
     Eyeball.prototype = {
         setupCanvas: function () {
             // Append canvas and setup the 2d drawing context
