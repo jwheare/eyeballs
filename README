@@ -1,5 +1,5 @@
 1. Copy eyeballs.js to your server
-2. Put <div id="eyeballs"></div> in your HTML where you want the eyeballs to be
+2. Put <div class="eyeball"></div> in your HTML where you want the eyeballs to be (you can have more than one!)
 3. Put <script src="eyeballs.js"></script> at the end of your <body> to bring the eyeballs to life
 
-Feel free to position and style div#eyeballs with CSS, but I'd advise leaving its box dimensions alone.
+Feel free to position and style your div.eyeball with CSS, but I'd advise leaving the box dimensions alone.
