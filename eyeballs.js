@@ -34,7 +34,7 @@ var Eyeball = (function () {
             x2: 26,
             y2: 8
         },
-        radius: 5
+        radius: 4
     };
     Eyeball.init = function () {
         // Find existing eyeballs
