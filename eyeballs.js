@@ -14,12 +14,13 @@
         // Canvas
         this.context = this.setupCanvas();
         
-        // Listen for mouse movement
-        this.bindMouseMoveListener();
-        
         // Draw initial state
         this.drawOriginPupils();
+        
+        Eyeball.balls.push(this);
     }
+    
+    Eyeball.balls = [];
     Eyeball.conf = {
         containerWidth: 35,
         containerHeight: 17,
@@ -53,15 +54,6 @@
             this.context.fillRect(x - 4, y + 7, 2, 1); this.context.fillRect(x + 3, y + 7, 2, 1);
             this.context.fillRect(x - 2, y + 8, 5, 1);
         },
-        drawOriginPupils: function () {
-            this.drawPupils(this.origins);
-        },
-        bindMouseMoveListener: function () {
-            var that = this;
-            document.addEventListener('mousemove', function (e) {
-                that.drawPupils(that.getPupilPositionsFromMousePosition(e.clientX, e.clientY));
-            }, false);
-        },
         drawPupil: function (x, y) {
             // Pixel circle!
             x = Math.round(x);
@@ -83,6 +75,13 @@
             this.drawPupil(coords.x1, coords.y1);
             this.drawPupil(coords.x2, coords.y2);
         },
+        drawOriginPupils: function () {
+            this.drawPupils(this.origins);
+        },
+        drawPupilsFromMousePosition: function (x, y) {
+            var coords = this.getPupilPositionsFromMousePosition(x, y);
+            this.drawPupils(coords);
+        },
         getPupilPositionsFromMousePosition: function (x, y) {
             // Normalise x and y to container page offset
             x = x - this.container.offsetLeft;
@@ -94,11 +93,11 @@
             x2 = x - this.origins.x2;
             y2 = y - this.origins.y2;
             
-            // Calculate hypotenuse length
+            // Calculate hypotenuse
             var d1 = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
             var d2 = Math.sqrt(Math.pow(x2, 2) + Math.pow(y2, 2));
             
-            // Calculate scale factor of hypotenus to radius
+            // Calculate scale factor of hypotenuse to radius
             var sf1 = this.radius / Math.max(d1, this.radius);
             var sf2 = this.radius / Math.max(d2, this.radius);
             
@@ -111,6 +110,14 @@
             };
         }
     };
+    
+    
+    // Listen for mouse movement
+    document.addEventListener('mousemove', function (e) {
+        for (var i = 0; i < Eyeball.balls.length; i++) {
+            Eyeball.balls[i].drawPupilsFromMousePosition(e.clientX, e.clientY);
+        }
+    }, false);
     
     // Setup eyeballs
     var i, containers = [];
